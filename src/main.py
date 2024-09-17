@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 import streamlit as st
 from langchain_community.document_loaders import UnstructuredPDFLoader
 from langchain_text_splitters.character import CharacterTextSplitter
-from langchain_community.vectorstores import FAISS #we can use chromadb as well
+from langchain_community.vectorstores import FAISS
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_groq import ChatGroq
 from langchain.memory import ConversationBufferMemory
@@ -20,7 +20,8 @@ working_dir = os.path.dirname(os.path.abspath(__file__))
 def load_document(file_path):
     loader = UnstructuredPDFLoader(file_path)
     documents = loader.load()
-    return 
+    return documents
+
 
 def setup_vectorstore(documents):
     embeddings = HuggingFaceEmbeddings()
@@ -32,6 +33,7 @@ def setup_vectorstore(documents):
     doc_chunks = text_splitter.split_documents(documents)
     vectorstore = FAISS.from_documents(doc_chunks, embeddings)
     return vectorstore
+
 
 def create_chain(vectorstore):
     llm = ChatGroq(
@@ -101,3 +103,4 @@ if user_input:
         assistant_response = response["answer"]
         st.markdown(assistant_response)
         st.session_state.chat_history.append({"role": "assistant", "content": assistant_response})
+
